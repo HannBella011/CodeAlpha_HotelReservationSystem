@@ -727,19 +727,21 @@
         let pendingReservation = null;
         let reservationToCancel = null;
 
-        // API Base URL
-        const API_BASE = 'http://localhost:8000/api';
+        // Get base path for GitHub Pages or local hosting
+        const basePath = window.location.pathname.includes('/CodeAlpha_HotelReservationSystem/')
+            ? '/CodeAlpha_HotelReservationSystem'
+            : '';
 
-        // Load data from API
+        // Load data from JSON files
         async function loadData() {
             try {
-                const roomsResponse = await fetch(`${API_BASE}/rooms`);
+                const roomsResponse = await fetch(`${basePath}/data/rooms.json`);
                 if (!roomsResponse.ok) {
                     throw new Error('Failed to fetch rooms');
                 }
                 rooms = await roomsResponse.json();
 
-                const reservationsResponse = await fetch(`${API_BASE}/reservations`);
+                const reservationsResponse = await fetch(`${basePath}/data/reservations.json`);
                 if (!reservationsResponse.ok) {
                     throw new Error('Failed to fetch reservations');
                 }
@@ -963,22 +965,11 @@
             };
 
             try {
-                // Send reservation to API
-                const response = await fetch(`${API_BASE}/reservations`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(reservation)
-                });
-
-                if (response.ok) {
-                    const createdReservation = await response.json();
-                    // Show confirmation
-                    showConfirmation(createdReservation);
-                } else {
-                    alert('Failed to create reservation. Please try again.');
-                }
+                // Add reservation to in-memory array (GitHub Pages cannot persist)
+                reservations.push(reservation);
+                // Show confirmation
+                showConfirmation(reservation);
+                // Note: Data persists only during this session. On page refresh, original data loads.
             } catch (error) {
                 console.error('Error creating reservation:', error);
                 alert('Failed to create reservation. Please try again.');
@@ -1112,21 +1103,16 @@
         // Confirm cancellation
         async function confirmCancel() {
             try {
-                const response = await fetch(`${API_BASE}/reservations/${reservationToCancel}/cancel`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    // Close modal and refresh
-                    closeCancelModal();
-                    await loadData();
-                    displayReservations();
-                } else {
-                    alert('Failed to cancel reservation. Please try again.');
+                // Find and cancel reservation in memory (GitHub Pages cannot persist)
+                const reservation = reservations.find(r => r.id === reservationToCancel);
+                if (reservation) {
+                    reservation.status = 'Cancelled';
+                    reservation.paymentStatus = 'Refunded';
                 }
+                // Close modal and refresh
+                closeCancelModal();
+                displayReservations();
+                // Note: Changes persist only during this session. On page refresh, original data loads.
             } catch (error) {
                 console.error('Error cancelling reservation:', error);
                 alert('Failed to cancel reservation. Please try again.');

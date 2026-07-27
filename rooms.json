@@ -4,7 +4,7 @@
     "number": "101",
     "category": "Standard",
     "price": 89.99,
-    "available": true,
+    "available": false,
     "description": "Comfortable standard room with queen bed, free WiFi, and basic amenities"
   },
   {
@@ -12,7 +12,7 @@
     "number": "102",
     "category": "Standard",
     "price": 89.99,
-    "available": true,
+    "available": false,
     "description": "Comfortable standard room with queen bed, free WiFi, and basic amenities"
   },
   {
