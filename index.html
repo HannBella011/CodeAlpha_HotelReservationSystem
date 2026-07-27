@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Reservation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #707070 0%, #505050 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        nav button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            background: #707070;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        nav button:hover {
+            background: #505050;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        nav button.active {
+            background: #505050;
+        }
+
+        .page {
+            display: none;
+            padding: 30px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .filter-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .filter-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-controls label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-controls select {
+            padding: 10px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-controls select:focus {
+            outline: none;
+            border-color: #707070;
+        }
+
+        .filter-controls input[type="text"] {
+            padding: 10px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            background: white;
+            cursor: text;
+            transition: border-color 0.3s ease;
+            min-width: 250px;
+        }
+
+        .filter-controls input[type="text"]:focus {
+            outline: none;
+            border-color: #707070;
+        }
+
+        .filter-controls button {
+            padding: 10px 25px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-controls button:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .rooms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .room-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-color: #707070;
+        }
+
+        .room-category {
+            color: #707070;
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .room-number {
+            color: #6c757d;
+            font-size: 1em;
+            margin-bottom: 15px;
+        }
+
+        .room-price {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.8em;
+            margin: 15px 0;
+        }
+
+        .room-description {
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .book-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+            border-bottom: 3px solid #707070;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #707070;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 15px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .cancel-btn:hover {
+            background: #c82333;
+        }
+
+        .room-info {
+            background: linear-gradient(135deg, #707070 0%, #505050 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .room-info h2 {
+            margin-bottom: 15px;
+        }
+
+        .room-info p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .reservations-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .reservations-table th,
+        .reservations-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .reservations-table th {
+            background: linear-gradient(135deg, #707070 0%, #505050 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .reservations-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-confirmed {
+            color: #28a745;
+            font-weight: bold;
+            background: #d4edda;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .status-cancelled {
+            color: #dc3545;
+            font-weight: bold;
+            background: #f8d7da;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .payment-paid {
+            color: #28a745;
+            font-weight: bold;
+            background: #d4edda;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .payment-pending {
+            color: #ffc107;
+            font-weight: bold;
+            background: #fff3cd;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .pay-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .pay-btn:hover {
+            background: #218838;
+        }
+
+        .cancel-reservation-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .cancel-reservation-btn:hover {
+            background: #c82333;
+        }
+
+        .confirmation-box {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .confirmation-box h2 {
+            color: #155724;
+            margin-bottom: 15px;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .total-price {
+            font-size: 2em;
+            font-weight: bold;
+            color: #28a745;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #6c757d;
+            font-size: 1.2em;
+        }
+
+        .no-data-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .modal-buttons button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background: #c82333;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .rooms-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .reservations-table {
+                font-size: 0.9em;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏨 Hotel Reservation System</h1>
+            <p>Search, Book, and Manage Your Hotel Reservations</p>
+        </header>
+
+        <nav>
+            <button onclick="showPage('home')" class="active" id="nav-home">Home</button>
+            <button onclick="showPage('manage')" id="nav-manage">Manage Reservations</button>
+        </nav>
+
+        <!-- Home Page -->
+        <div id="home-page" class="page active">
+            <div class="filter-section">
+                <h2>🔍 Search Available Rooms</h2>
+                <div class="filter-controls">
+                    <label for="search-input">Search:</label>
+                    <input type="text" id="search-input" placeholder="Search by room number or description..." onkeyup="searchRooms()">
+                    <label for="category-filter">Filter by Category:</label>
+                    <select id="category-filter" onchange="searchRooms()">
+                        <option value="all">All Categories</option>
+                        <option value="Standard">Standard</option>
+                        <option value="Deluxe">Deluxe</option>
+                        <option value="Suite">Suite</option>
+                    </select>
+                    <button onclick="searchRooms()">Search Rooms</button>
+                </div>
+            </div>
+
+            <h2 style="color: #333; margin-bottom: 20px;">Available Rooms</h2>
+            <div id="rooms-container" class="rooms-grid">
+                <!-- Rooms will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Booking Page -->
+        <div id="booking-page" class="page">
+            <div id="booking-room-info" class="room-info">
+                <!-- Room info will be displayed here -->
+            </div>
+
+            <form id="booking-form">
+                <div class="form-section">
+                    <h2>👤 Customer Information</h2>
+                    <div class="form-group">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" id="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" id="lastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address:</label>
+                        <input type="text" id="address" required>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2>📅 Booking Details</h2>
+                    <div class="form-group">
+                        <label for="checkInDate">Check-in Date:</label>
+                        <input type="date" id="checkInDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkOutDate">Check-out Date:</label>
+                        <input type="date" id="checkOutDate" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">Proceed to Payment</button>
+                <button type="button" class="cancel-btn" onclick="showPage('home')">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Payment Page -->
+        <div id="payment-page" class="page">
+            <div class="confirmation-box">
+                <div class="success-icon">💳</div>
+                <h2>Payment Simulation</h2>
+                <p>Total Amount: <span id="payment-amount" style="font-size: 1.5em; font-weight: bold; color: #28a745;">$0.00</span></p>
+            </div>
+
+            <div class="form-section">
+                <h2>💳 Payment Details</h2>
+                <div class="form-group">
+                    <label for="cardNumber">Card Number:</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-group">
+                    <label for="cardName">Cardholder Name:</label>
+                    <input type="text" id="cardName" placeholder="John Doe">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label for="expiryDate">Expiry Date:</label>
+                        <input type="text" id="expiryDate" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV:</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="3">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="processPayment()" class="submit-btn">Pay Now</button>
+            <button onclick="showPage('home')" class="cancel-btn">Cancel</button>
+        </div>
+
+        <!-- Confirmation Page -->
+        <div id="confirmation-page" class="page">
+            <div class="confirmation-box">
+                <div class="success-icon">✓</div>
+                <h2>Booking Confirmed!</h2>
+                <p>Your reservation has been successfully processed and payment has been received.</p>
+            </div>
+
+            <div class="form-section">
+                <h2>📋 Reservation Details</h2>
+                <div class="details-grid" id="confirmation-details">
+                    <!-- Details will be displayed here -->
+                </div>
+            </div>
+
+            <div class="total-price" id="confirmation-total">Total Paid: $0.00</div>
+
+            <button onclick="showPage('home')" class="submit-btn">Back to Home</button>
+            <button onclick="showPage('manage')" class="cancel-btn" style="background: #707070;">View My Reservations</button>
+        </div>
+
+        <!-- Manage Reservations Page -->
+        <div id="manage-page" class="page">
+            <h2 style="color: #333; margin-bottom: 20px;">📋 All Reservations</h2>
+            <div id="reservations-container">
+                <!-- Reservations table will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Confirmation Modal -->
+    <div id="cancel-modal" class="modal">
+        <div class="modal-content">
+            <h2>⚠️ Cancel Reservation?</h2>
+            <p>Are you sure you want to cancel this reservation? This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button onclick="confirmCancel()" class="confirm-btn">Yes, Cancel</button>
+                <button onclick="closeCancelModal()" class="back-btn">No, Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data
+        let rooms = [];
+        let reservations = [];
+        let selectedRoom = null;
+        let pendingReservation = null;
+        let reservationToCancel = null;
+
+        // Get base path for GitHub Pages or local hosting
+        const basePath = window.location.pathname.includes('/CodeAlpha_HotelReservationSystem/')
+            ? '/CodeAlpha_HotelReservationSystem'
+            : '';
+
+        // Load data from JSON files
+        async function loadData() {
+            try {
+                const roomsResponse = await fetch(`${basePath}/data/rooms.json`);
+                if (!roomsResponse.ok) {
+                    throw new Error('Failed to fetch rooms');
+                }
+                rooms = await roomsResponse.json();
+
+                const reservationsResponse = await fetch(`${basePath}/data/reservations.json`);
+                if (!reservationsResponse.ok) {
+                    throw new Error('Failed to fetch reservations');
+                }
+                reservations = await reservationsResponse.json();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Failed to load data. Please refresh the page.');
+            }
+        }
+
+        // Save data to API (not needed as API handles persistence)
+        function saveData() {
+            // Data is saved automatically by the API
+        }
+
+        // Show page
+        async function showPage(pageName) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Remove active class from nav buttons
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageName + '-page').classList.add('active');
+            
+            // Add active class to nav button if it exists
+            const navButton = document.getElementById('nav-' + pageName);
+            if (navButton) {
+                navButton.classList.add('active');
+            }
+
+            // Load page-specific data
+            if (pageName === 'home') {
+                await loadData();
+                displayRooms();
+            } else if (pageName === 'manage') {
+                await loadData();
+                displayReservations();
+            }
+        }
+
+        // Display rooms
+        function displayRooms(filter = 'all') {
+            const container = document.getElementById('rooms-container');
+            container.innerHTML = '';
+
+            if (!rooms || rooms.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data" style="grid-column: 1 / -1;">
+                        <div class="no-data-icon">🏨</div>
+                        <h3>Loading rooms...</h3>
+                        <p>Please wait while we fetch available rooms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let filteredRooms = rooms;
+            if (filter !== 'all') {
+                filteredRooms = rooms.filter(room => room.category === filter && room.available);
+            } else {
+                filteredRooms = rooms.filter(room => room.available);
+            }
+
+            if (filteredRooms.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data" style="grid-column: 1 / -1;">
+                        <div class="no-data-icon">🏨</div>
+                        <h3>No rooms available</h3>
+                        <p>Try a different category or check back later.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredRooms.forEach(room => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="room-category">${room.category}</div>
+                    <div class="room-number">Room ${room.number}</div>
+                    <div class="room-price">$${room.price.toFixed(2)} / night</div>
+                    <div class="room-description">${room.description}</div>
+                    <button class="book-btn" onclick="showBookingForm(${room.id})">Book Now</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Filter rooms
+        function filterRooms() {
+            searchRooms();
+        }
+
+        // Search rooms
+        function searchRooms() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            
+            const container = document.getElementById('rooms-container');
+            container.innerHTML = '';
+
+            let filteredRooms = rooms.filter(room => {
+                const matchesSearch = room.number.toLowerCase().includes(searchTerm) || 
+                                     room.description.toLowerCase().includes(searchTerm) ||
+                                     room.category.toLowerCase().includes(searchTerm);
+                const matchesCategory = categoryFilter === 'all' || room.category === categoryFilter;
+                const isAvailable = room.available;
+                
+                return matchesSearch && matchesCategory && isAvailable;
+            });
+
+            if (filteredRooms.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data" style="grid-column: 1 / -1;">
+                        <div class="no-data-icon">🏨</div>
+                        <h3>No rooms found</h3>
+                        <p>Try a different search term or category.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredRooms.forEach(room => {
+                const card = document.createElement('div');
+                card.className = 'room-card';
+                card.innerHTML = `
+                    <div class="room-category">${room.category}</div>
+                    <div class="room-number">Room ${room.number}</div>
+                    <div class="room-price">$${room.price.toFixed(2)} / night</div>
+                    <div class="room-description">${room.description}</div>
+                    <button class="book-btn" onclick="showBookingForm(${room.id})">Book Now</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Show booking form
+        function showBookingForm(roomId) {
+            selectedRoom = rooms.find(room => room.id === roomId);
+            if (!selectedRoom) return;
+
+            const roomInfo = document.getElementById('booking-room-info');
+            roomInfo.innerHTML = `
+                <h2>${selectedRoom.category} Room - ${selectedRoom.number}</h2>
+                <p><strong>Price:</strong> $${selectedRoom.price.toFixed(2)} per night</p>
+                <p><strong>Description:</strong> ${selectedRoom.description}</p>
+            `;
+
+            // Clear form
+            document.getElementById('booking-form').reset();
+
+            // Set minimum dates
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('checkInDate').min = today;
+            document.getElementById('checkOutDate').min = today;
+
+            showPage('booking');
+        }
+
+        // Handle booking form submission
+        document.getElementById('booking-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const checkInDate = new Date(document.getElementById('checkInDate').value);
+            const checkOutDate = new Date(document.getElementById('checkOutDate').value);
+
+            if (checkOutDate <= checkInDate) {
+                alert('Check-out date must be after check-in date');
+                return;
+            }
+
+            const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
+            const totalPrice = selectedRoom.price * nights;
+
+            pendingReservation = {
+                customer: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    address: document.getElementById('address').value
+                },
+                roomId: selectedRoom.id,
+                roomNumber: selectedRoom.number,
+                category: selectedRoom.category,
+                checkInDate: checkInDate.toISOString().split('T')[0],
+                checkOutDate: checkOutDate.toISOString().split('T')[0],
+                totalPrice: totalPrice,
+                nights: nights
+            };
+
+            document.getElementById('payment-amount').textContent = `$${totalPrice.toFixed(2)}`;
+            showPage('payment');
+        });
+
+        // Process payment
+        async function processPayment() {
+            const cardNumber = document.getElementById('cardNumber').value;
+            const cardName = document.getElementById('cardName').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+
+            if (!cardNumber || !cardName || !expiryDate || !cvv) {
+                alert('Please fill in all payment details');
+                return;
+            }
+
+            // Create reservation
+            const reservation = {
+                id: Date.now(),
+                ...pendingReservation,
+                status: 'Confirmed',
+                paymentStatus: 'Paid',
+                bookingDate: new Date().toISOString().split('T')[0]
+            };
+
+            try {
+                // Add reservation to in-memory array (GitHub Pages cannot persist)
+                reservations.push(reservation);
+                // Show confirmation
+                showConfirmation(reservation);
+                // Note: Data persists only during this session. On page refresh, original data loads.
+            } catch (error) {
+                console.error('Error creating reservation:', error);
+                alert('Failed to create reservation. Please try again.');
+            }
+        }
+
+        // Show confirmation
+        function showConfirmation(reservation) {
+            const detailsContainer = document.getElementById('confirmation-details');
+            detailsContainer.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Reservation ID:</span>
+                    <span class="detail-value">#${reservation.id}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Customer Name:</span>
+                    <span class="detail-value">${reservation.customer.firstName} ${reservation.customer.lastName}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${reservation.customer.email}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Room Number:</span>
+                    <span class="detail-value">${reservation.roomNumber}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Room Category:</span>
+                    <span class="detail-value">${reservation.category}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Check-in Date:</span>
+                    <span class="detail-value">${reservation.checkInDate}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Check-out Date:</span>
+                    <span class="detail-value">${reservation.checkOutDate}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Number of Nights:</span>
+                    <span class="detail-value">${reservation.nights}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Payment Status:</span>
+                    <span class="detail-value" style="color: #28a745; font-weight: bold;">${reservation.paymentStatus}</span>
+                </div>
+            `;
+
+            document.getElementById('confirmation-total').textContent = `Total Paid: $${reservation.totalPrice.toFixed(2)}`;
+            showPage('confirmation');
+        }
+
+        // Display reservations
+        function displayReservations() {
+            const container = document.getElementById('reservations-container');
+
+            if (reservations.length === 0) {
+                container.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📋</div>
+                        <h3>No reservations found</h3>
+                        <p>Start by <a href="#" onclick="showPage('home')" style="color: #707070;">searching for available rooms</a>.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="reservations-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Room</th>
+                            <th>Category</th>
+                            <th>Check-in</th>
+                            <th>Check-out</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Payment</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            reservations.forEach(reservation => {
+                const statusClass = reservation.status === 'Confirmed' ? 'status-confirmed' : 'status-cancelled';
+                const paymentClass = reservation.paymentStatus === 'Paid' ? 'payment-paid' : 'payment-pending';
+
+                tableHTML += `
+                    <tr>
+                        <td>#${reservation.id}</td>
+                        <td>${reservation.customer.firstName} ${reservation.customer.lastName}</td>
+                        <td>Room ${reservation.roomNumber}</td>
+                        <td>${reservation.category}</td>
+                        <td>${reservation.checkInDate}</td>
+                        <td>${reservation.checkOutDate}</td>
+                        <td>$${reservation.totalPrice.toFixed(2)}</td>
+                        <td><span class="${statusClass}">${reservation.status}</span></td>
+                        <td><span class="${paymentClass}">${reservation.paymentStatus}</span></td>
+                        <td>
+                            ${reservation.status === 'Confirmed' ? `
+                                <button class="action-btn cancel-reservation-btn" onclick="showCancelModal(${reservation.id})">Cancel</button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Show cancel modal
+        function showCancelModal(reservationId) {
+            reservationToCancel = reservationId;
+            document.getElementById('cancel-modal').classList.add('active');
+        }
+
+        // Close cancel modal
+        function closeCancelModal() {
+            document.getElementById('cancel-modal').classList.remove('active');
+            reservationToCancel = null;
+        }
+
+        // Confirm cancellation
+        async function confirmCancel() {
+            try {
+                // Find and cancel reservation in memory (GitHub Pages cannot persist)
+                const reservation = reservations.find(r => r.id === reservationToCancel);
+                if (reservation) {
+                    reservation.status = 'Cancelled';
+                    reservation.paymentStatus = 'Refunded';
+                }
+                // Close modal and refresh
+                closeCancelModal();
+                displayReservations();
+                // Note: Changes persist only during this session. On page refresh, original data loads.
+            } catch (error) {
+                console.error('Error cancelling reservation:', error);
+                alert('Failed to cancel reservation. Please try again.');
+            }
+        }
+
+        // Initialize application
+        (async function init() {
+            try {
+                await loadData();
+                displayRooms();
+            } catch (error) {
+                console.error('Initialization error:', error);
+            }
+        })();
+    </script>
+</body>
+</html>
